@@ -124,7 +124,7 @@ int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, s
 
 
 
-int eros_transmit_uart_inplace(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
+int eros_transmit_inplace(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
 {
     uint16_t len = length;
 
