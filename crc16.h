@@ -1,3 +1,5 @@
+#include <stdint.h>
+#include <stddef.h>
 /*
  * crc16.h
  *

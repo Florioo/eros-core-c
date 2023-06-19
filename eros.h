@@ -5,7 +5,7 @@
 
 typedef void (*channel_callback_t)(void * eros, uint8_t *data, uint16_t length);
 typedef void (*channel_catch_callback_t)(void * eros,uint8_t channel, uint8_t *data, uint16_t length);
-typedef void (*io_write_function_t)(void* transport_context, uint8_t *data, uint16_t length);
+typedef void (*io_write_function_t)(void* transport_context, const uint8_t *data, uint16_t length);
 typedef int (*io_read_function_t)(void* transport_context, uint8_t *data, uint16_t length);
 
 

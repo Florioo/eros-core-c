@@ -1,19 +1,15 @@
-#include <stdio.h>
-#include "esp_log.h"
 #include "crc16.h"
-#include "string.h"
-#include "nanocobs/cobs.h"
-#include "driver/uart.h"
+#include "cobs.h"
 #include "eros.h"
 
+#include <string.h>
+#include <stdio.h>
 
 #define VERISON 0x00
-static const char *TAG = "EROS";
 
 int eros_attach_receive_callback(eros_stream_t * eros, uint8_t channel, channel_callback_t callback)
 {
     if (channel > 7) {
-        ESP_LOGE(TAG, "Channel out of range: %d", channel);
         return 1;
     }
     eros->callbacks[channel] = callback;
@@ -33,7 +29,6 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
     uint16_t total_length = *buffer_len+5;
 
    if (total_length > buffer_size) {
-        ESP_LOGE(TAG, "buffer to small: %d > %d", total_length, buffer_size);
         return 1;
     }
 
@@ -60,7 +55,6 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
     cobs_ret_t ret =  cobs_encode_inplace(buffer, total_length);
 
     if (ret) {
-        ESP_LOGE(TAG, "COBS encoding failed: %d", ret);
         return 1;
     }
     
@@ -76,7 +70,6 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
     cobs_ret_t ret =  cobs_decode_inplace(buffer, *buffer_len);
 
     if (ret) {
-        ESP_LOGE(TAG, "COBS decoding failed: %d", ret);
         return 1;
     }
     
@@ -88,7 +81,6 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
     uint16_t checksum = crc16(buffer, *buffer_len);
 
     if (checksum){
-        ESP_LOGE(TAG, "Checksum mismatch");
         return 1;
     }
     
@@ -150,8 +142,8 @@ int eros_process_rx_packet(eros_stream_t * eros, uint8_t * data, size_t length){
     int ret = eros_decode_inplace(&channel, data , &len);
 
     if (ret) {
-        ESP_LOGE(TAG, "Decoding failed");
-        ESP_LOG_BUFFER_HEXDUMP("RECEIVED", data, length, ESP_LOG_INFO);
+        // ESP_LOGE(TAG, "Decoding failed");
+        // ESP_LOG_BUFFER_HEXDUMP("RECEIVED", data, length, ESP_LOG_INFO);
         return 1;
     }
     
