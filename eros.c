@@ -7,12 +7,13 @@
 
 #define VERISON 0x00
 
-int eros_attach_receive_callback(eros_stream_t * eros, uint8_t channel, channel_callback_t callback)
+int eros_attach_receive_callback(eros_stream_t * eros, uint8_t channel, channel_callback_t callback, void * context)
 {
-    if (channel > 7) {
+    if (channel > 15) {
         return 1;
     }
     eros->callbacks[channel] = callback;
+    eros->callback_context[channel] = context;
     return 0;
 }
 
@@ -105,15 +106,23 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
     return 0;
 }
 
-
+#include "esp_system.h"
 
 int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
 {
     uint8_t * buffer = malloc(length+5);
     uint16_t len = length;
+    
+    if (!buffer) {
+        printf("Failed to allocate memory for transmit buffer\n");
+        return 1;
+    }
 
     memcpy(buffer, data, length);
     eros_encode_inplace(channel, buffer, &len, length + 5);
+    // printf("%p %p %p %d\n",eros->write_function,  eros->transport_context, buffer, len);
+    // Get free memory
+    // printf("Free Heap: %ld\n", esp_get_free_heap_size());
 
     // Write to the write function
     eros->write_function(eros->transport_context, buffer, len);
@@ -151,7 +160,13 @@ int eros_process_rx_packet(eros_stream_t * eros, uint8_t * data, size_t length){
     // ESP_LOG_BUFFER_HEXDUMP("RECEIVED", data, len, ESP_LOG_INFO);
 
     if (eros->callbacks[channel]) {
-        eros->callbacks[channel](eros, data, len);
+        if (eros->callback_context[channel]) {
+            eros->callbacks[channel](eros,data, len, eros->callback_context[channel]);
+        }
+        else
+        {
+            eros->callbacks[channel](eros, data, len, NULL);
+        }
     }else if (eros->catch_callback){
         eros->catch_callback(eros, channel, data, len);
 
