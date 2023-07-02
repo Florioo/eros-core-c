@@ -37,11 +37,6 @@ eros_stream_t * eros_init_tcp(int port)
         ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
         return NULL;
     }
-    // Set TCP_NODELAY
-    // int flag = 1;
-    // if (setsockopt(tcp_context->listen_socket, SOL_SOCKET, TCP_NODELAY, &flag, sizeof(flag)) < 0) {
-    //     ESP_LOGE(TAG, "Unable to set TCP_NODELAY: errno %d", errno);
-    // }
 
     struct sockaddr_in dest_addr;
     dest_addr.sin_addr.s_addr = htonl(INADDR_ANY);  //Accept any incoming address

@@ -51,7 +51,7 @@ eros_stream_t * eros_init_udp(int port)
     }
 
     // Start the read task
-    xTaskCreate(udp_read_task, "udp_read_task", 1024*4, eros, 10, NULL);
+    xTaskCreate(udp_read_task, "eros_udp_read_task", 1024*6, eros, 10, NULL);
     
     return eros;
 }

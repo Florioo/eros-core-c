@@ -40,7 +40,7 @@ eros_stream_t *  eros_init_uart( uart_port_t uart_num)
     ESP_ERROR_CHECK(uart_set_pin(uart_num, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
     // Start the read task
-    xTaskCreate(read_task, "uart_read_task", 1024*4, eros, 10, NULL);
+    xTaskCreate(read_task, "eros_uart_read_task", 1024*4, eros, 10, NULL);
     
     return eros;
 
