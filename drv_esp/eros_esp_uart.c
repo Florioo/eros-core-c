@@ -11,7 +11,7 @@ int uart_read(void* context, uint8_t *data, uint16_t length);
 void uart_write(void* context, uint8_t *data, uint16_t length);
 
 
-eros_stream_t *  eros_init_uart( uart_port_t uart_num)
+eros_stream_t *  eros_init_uart( uart_port_t uart_num, int baudrate)
 {
 
     eros_stream_t * eros = malloc(sizeof(eros_stream_t));
@@ -25,7 +25,7 @@ eros_stream_t *  eros_init_uart( uart_port_t uart_num)
     
     // initializes the UART
     uart_config_t uart_config = {
-        .baud_rate = 2000000,
+        .baud_rate = baudrate,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
