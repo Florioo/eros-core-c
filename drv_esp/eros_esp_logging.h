@@ -1,4 +1,4 @@
-#include "eros.h"
+#include "eros_core.h"
 #include <stdbool.h>
 
 #ifndef EROS_ESP_LOGGING_H

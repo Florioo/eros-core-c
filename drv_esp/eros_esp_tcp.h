@@ -1,4 +1,4 @@
-#include "eros.h"
+#include "eros_core.h"
 
 #ifndef EROS_ESP_TCP_H
 #define EROS_ESP_TCP_H

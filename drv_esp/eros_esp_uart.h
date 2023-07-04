@@ -1,4 +1,4 @@
-#include "eros.h"
+#include "eros_core.h"
 #include "driver/uart.h"
 
 #ifndef EROS_ESP_UART_H

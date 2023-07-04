@@ -1,6 +1,6 @@
 #include "crc16.h"
 #include "cobs.h"
-#include "eros.h"
+#include "eros_core.h"
 
 #include <string.h>
 #include <stdio.h>

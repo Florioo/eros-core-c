@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stddef.h>
-#ifndef EROS_H
-#define EROS_H
+#ifndef EROS_CORE_H
+#define EROS_CORE_H
 
 typedef uint8_t (*channel_callback_t)(void * eros, uint8_t *data, uint16_t length, void * context);
 typedef void (*channel_catch_callback_t)(void * eros,uint8_t channel, uint8_t *data, uint16_t length);

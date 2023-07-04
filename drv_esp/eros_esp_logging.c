@@ -1,4 +1,4 @@
-#include "eros.h"
+#include "eros_core.h"
 #include "eros_esp_logging.h"
 #include "esp_log.h"
 #include <stdio.h>

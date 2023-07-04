@@ -1,4 +1,4 @@
-#include "eros.h"
+#include "eros_core.h"
 #include "lwip/sockets.h"
 #include "esp_log.h"
 #include "string.h"

@@ -1,4 +1,5 @@
-#include "eros.h"
+#include "eros_core.h"
+
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "string.h"

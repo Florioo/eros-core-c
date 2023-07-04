@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS "crc16.c"
-         "eros.c"
+         "eros_core.c"
          "drv_esp/eros_esp_udp.c"
          "drv_esp/eros_esp_logging.c"
          "drv_esp/eros_esp_uart.c"
