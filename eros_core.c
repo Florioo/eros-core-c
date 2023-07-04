@@ -43,9 +43,10 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
 
     // Shift the buffer 3 bytes to the right (1 for the routing header,1 1 for the cobs header and 1 for the initial zero)
     memmove(buffer+3, buffer, buffer_length);
-    
+
     // Increment the buffer pointer (to reserve space for the initial zero)
     buffer++;
+    total_length--;
 
     // Set the in-place sentinel values
     buffer[0] = COBS_INPLACE_SENTINEL_VALUE;
@@ -63,7 +64,9 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
     cobs_ret_t ret =  cobs_encode_inplace(buffer, total_length);
 
     // Also set the first byte to zero, marking the start of the buffer
-    buffer[-1] = 0;
+    buffer--;
+    total_length++;
+    buffer[0] = 0;
 
     if (ret) {
         return 1;
@@ -130,6 +133,7 @@ int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, s
     }
 
     memcpy(buffer, data, length);
+    
     eros_encode_inplace(channel, buffer, &len, length + 6);
     // printf("%p %p %p %d\n",eros->write_function,  eros->transport_context, buffer, len);
     // Get free memory
