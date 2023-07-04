@@ -26,8 +26,12 @@ int eros_attach_catch_callback(eros_stream_t * eros, channel_catch_callback_t ca
 
 int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, uint16_t buffer_size)
 {
+    
+    //Readability can be improved here
 
-    uint16_t total_length = *buffer_len+5;
+    uint16_t buffer_length = *buffer_len;
+    uint16_t total_length = buffer_length+6;
+    
 
    if (total_length > buffer_size) {
         return 1;
@@ -37,8 +41,11 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
     header |= (VERISON & 0x03) << 6;
     header |= (channel & 0x0F) << 2;
 
-    // Shift the buffer 2 bytes to the right
-    memmove(buffer+2, buffer, *buffer_len);
+    // Shift the buffer 3 bytes to the right (1 for the routing header,1 1 for the cobs header and 1 for the initial zero)
+    memmove(buffer+3, buffer, buffer_length);
+    
+    // Increment the buffer pointer (to reserve space for the initial zero)
+    buffer++;
 
     // Set the in-place sentinel values
     buffer[0] = COBS_INPLACE_SENTINEL_VALUE;
@@ -46,14 +53,17 @@ int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, 
     buffer[total_length-1] = COBS_INPLACE_SENTINEL_VALUE;
 
     // Calculate the Checksum
-    uint16_t checksum = crc16(buffer+1, *buffer_len + 1);
+    uint16_t checksum = crc16(buffer+1, buffer_length + 1);
 
     // Add the checksum to the transmit buffer
-    buffer[*buffer_len + 2] = checksum >> 8;
-    buffer[*buffer_len + 3] = checksum & 0xFF;
+    buffer[buffer_length + 2] = checksum >> 8;
+    buffer[buffer_length + 3] = checksum & 0xFF;
 
     // Add the COBS encoding
     cobs_ret_t ret =  cobs_encode_inplace(buffer, total_length);
+
+    // Also set the first byte to zero, marking the start of the buffer
+    buffer[-1] = 0;
 
     if (ret) {
         return 1;
@@ -98,6 +108,7 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
 
     // Move the buffer back to the start
     memmove(buffer_start, buffer, *buffer_len);
+
     // ESP_LOGI(TAG, "Channel: %d", *channel);
     // ESP_LOG_BUFFER_HEXDUMP("DECODED", buffer_start, *buffer_len, ESP_LOG_INFO);
     // Null terminate the string
@@ -110,7 +121,7 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
 
 int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
 {
-    uint8_t * buffer = malloc(length+5);
+    uint8_t * buffer = malloc(length+6);
     uint16_t len = length;
     
     if (!buffer) {
@@ -119,7 +130,7 @@ int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, s
     }
 
     memcpy(buffer, data, length);
-    eros_encode_inplace(channel, buffer, &len, length + 5);
+    eros_encode_inplace(channel, buffer, &len, length + 6);
     // printf("%p %p %p %d\n",eros->write_function,  eros->transport_context, buffer, len);
     // Get free memory
     // printf("Free Heap: %ld\n", esp_get_free_heap_size());
@@ -137,7 +148,7 @@ int eros_transmit_inplace(eros_stream_t * eros, uint8_t channel, const uint8_t *
 {
     uint16_t len = length;
 
-    eros_encode_inplace(channel, (uint8_t *) data, &len, length + 5);
+    eros_encode_inplace(channel, (uint8_t *) data, &len, length + 6);
     eros->write_function(eros->transport_context, data, len);
 
     return 0;
