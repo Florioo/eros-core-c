@@ -6,7 +6,7 @@
 
 #define BUFFER_SIZE 512
 #define MAX_LOGGING_STREAMS 10
-
+#define LOG_PRINTF_STATEMENTS //If defined, eros will log printf statements otherwise they will be discared
 // Static buffer for logging, log messages should be less than 512 bytes,
 // otherwise they will be truncated
 
@@ -15,10 +15,14 @@ typedef struct {
     uint8_t channel;
 } eros_logging_config_t;
 
+
 static eros_logging_config_t eros_logging_config[MAX_LOGGING_STREAMS] = {0};
 static  int eros_logging_config_count = 0;
 int eros_esp_log_vprintf(const char *fmt, va_list arguments);
-int eros_esp_log_vprintf_redirect(const char *fmt, va_list arguments);
+int eros_esp_log_vprintf_handler(const char *fmt, va_list arguments);
+int stdout_handler(void *_, const char *data, int size);
+
+
 
 /**
  * @brief Setup eros logging
@@ -28,12 +32,18 @@ int eros_esp_log_vprintf_redirect(const char *fmt, va_list arguments);
  */
 void eros_esp_logging_setup(bool keep_original_logging)
 {
-    // Redirect the logging to eros
+    // Reroute logging of the standard ESP to eros
     if (keep_original_logging){
-        esp_log_set_vprintf(eros_esp_log_vprintf_redirect);
+        esp_log_set_vprintf(eros_esp_log_vprintf_handler);
     }else{
         esp_log_set_vprintf(eros_esp_log_vprintf);
     }
+
+    // Reroute logging to stdout to eros (or disable it, depending on LOG_PRINTF_STATEMENTS)
+    char * stdout_buf = (char *)malloc(128);
+    fclose(stdout);
+    stdout = fwopen(NULL, &stdout_handler);
+    setvbuf(stdout, stdout_buf, _IOLBF, 128);
 
 }
 
@@ -98,6 +108,8 @@ void eros_esp_logging_remove_stream(eros_stream_t * eros)
     }
 }
 
+
+
 /**
  * @brief This is the eros vprintf function
  * @details This function is called by the ESP logging system when a log is made. 
@@ -127,7 +139,26 @@ int eros_esp_log_vprintf(const char *fmt, va_list arguments)
     return length;
 }
 
-int eros_esp_log_vprintf_redirect(const char *fmt, va_list arguments) 
+/**
+ * @brief This is the stdout handler, it repalces the default stdout handler
+ * @details This replaces the printf output.
+*/
+int stdout_handler(void *_, const char *data, int size)
+{
+
+    #ifdef LOG_PRINTF_STATEMENTS
+    // Send the log to all eros streams, in this case we can't use eros_transmit_inplace because
+    // ite modifies the buffer
+    for (uint8_t i = 0; i < eros_logging_config_count; i++)
+    {
+        eros_transmit(eros_logging_config[i].eros, eros_logging_config[i].channel, (uint8_t *) data, size);
+    }
+
+    #endif // LOG_PRINTF_STATEMENTS
+    return size;
+
+}
+int eros_esp_log_vprintf_handler(const char *fmt, va_list arguments) 
 {
     // Print to stdout
     vprintf(fmt, arguments);
