@@ -4,6 +4,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #define VERISON 0x00
 
@@ -106,7 +107,24 @@ int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len)
     return 0;
 }
 
-#include "esp_system.h"
+
+int eros_transmit_printf(eros_stream_t * eros, uint8_t channel, const char * format, ...)
+{
+    char buffer[256];
+    va_list args;
+    va_start(args, format);
+    int ret = vsnprintf(buffer, 128, format, args);
+    va_end(args);
+
+    if (ret < 0) {
+        return 1;
+    }
+
+    eros_transmit(eros, channel, (uint8_t *) buffer, ret);
+    return 0;
+}
+
+
 
 int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
 {
