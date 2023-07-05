@@ -27,9 +27,9 @@ eros_stream_t * eros_init_tcp(int port)
     eros_stream_t * eros = malloc(sizeof(eros_stream_t));
     memset(eros, 0, sizeof(eros_stream_t));
 
-    eros->transport_context = tcp_context;
-    eros->write_function = eros_tcp_write;
-    eros->read_function = eros_tcp_read;
+    eros->transport_context = (void*)tcp_context;
+    eros->write_function = (void*)eros_tcp_write;
+    eros->read_function = (void*)eros_tcp_read;
     
     // Create a TCP socket
     tcp_context->listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);

@@ -28,8 +28,8 @@ eros_stream_t * eros_init_udp(int port)
     memset(eros, 0, sizeof(eros_stream_t));
 
     eros->transport_context = udp_context;
-    eros->write_function = udp_write;
-    eros->read_function = udp_read;
+    eros->write_function = (void*)udp_write;
+    eros->read_function = (void*)udp_read;
 
     // Create a UDP socket
     udp_context->sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);

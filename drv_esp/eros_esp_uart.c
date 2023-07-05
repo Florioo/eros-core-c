@@ -17,9 +17,9 @@ eros_stream_t *  eros_init_uart( uart_port_t uart_num, int baudrate)
     eros_stream_t * eros = malloc(sizeof(eros_stream_t));
     memset(eros, 0, sizeof(eros_stream_t));
 
-    eros->transport_context = uart_num;
-    eros-> write_function = uart_write;
-    eros->read_function = uart_read;
+    eros->transport_context = (void*)uart_num;
+    eros-> write_function =  (void*)uart_write;
+    eros->read_function =  (void*)uart_read;
 
     
     
