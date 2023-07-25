@@ -128,7 +128,11 @@ int eros_transmit_printf(eros_stream_t * eros, uint8_t channel, const char * for
 
 int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length)
 {
-    uint8_t * buffer = malloc(length+5);
+    if (eros== NULL){
+        return 1;
+    }
+
+    uint8_t * buffer = malloc(length+10);
     uint16_t len = length;
     
     if (!buffer) {
@@ -137,7 +141,14 @@ int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, s
     }
 
     memcpy(buffer, data, length);
-    eros_encode_inplace(channel, buffer, &len, length + 5);
+    int ret = eros_encode_inplace(channel, buffer, &len, length + 10);
+    
+    if (ret) {
+        printf("Failed to encode packet\n");
+        free(buffer);
+        return 1;
+    }
+
     // printf("%p %p %p %d\n",eros->write_function,  eros->transport_context, buffer, len);
     // Get free memory
     // printf("Free Heap: %ld\n", esp_get_free_heap_size());
