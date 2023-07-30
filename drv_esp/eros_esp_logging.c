@@ -125,11 +125,6 @@ int eros_esp_log_vprintf(const char *fmt, va_list arguments)
     static char buffer[BUFFER_SIZE];
     int length = vsnprintf(buffer, sizeof(buffer), fmt, arguments);
 
-    // if only a single eros stream is configured, send the log to that stream
-    if (eros_logging_config_count == 0){
-        eros_transmit_inplace(eros_logging_config[0].eros, eros_logging_config[0].channel, (uint8_t *) buffer, length);
-    }
-
     // Send the log to all eros streams, in this case we can't use eros_transmit_inplace because
     // ite modifies the buffer
     for (uint8_t i = 0; i < eros_logging_config_count; i++)

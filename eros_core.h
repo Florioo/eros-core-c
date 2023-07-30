@@ -18,10 +18,10 @@ typedef struct eros_stream_t {
 } eros_stream_t;
 
 
-int eros_encode_inplace(uint8_t channel, uint8_t *buffer, uint16_t *buffer_len, uint16_t buffer_size);
+int eros_encode(uint8_t channel, uint8_t *input_buffer, uint16_t input_data_len,
+                                uint8_t *output_buffer , uint16_t *output_buffer_len);
 int eros_attach_receive_callback(eros_stream_t * eros, uint8_t channel, channel_callback_t callback, void * context);
 int eros_decode_inplace(uint8_t *channel, uint8_t *buffer, uint16_t *buffer_len);
-int eros_transmit_inplace(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length);
 int eros_transmit_with_prefix(eros_stream_t * eros, uint8_t channel, uint8_t prefix, const uint8_t * data, size_t length);
 int eros_transmit(eros_stream_t * eros, uint8_t channel, const uint8_t * data, size_t length);
 int eros_transmit_printf(eros_stream_t * eros, uint8_t channel, const char * format, ...);
