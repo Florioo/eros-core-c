@@ -77,7 +77,6 @@ int udp_read(void* context, uint8_t *data, uint16_t length)
     socklen_t socklen = sizeof(udp_context->peer_addr);
     // Read data from the UDP socket
     int ret =  recvfrom(udp_context->sock, data, length - 1, 0, (struct sockaddr *)&udp_context->peer_addr, &socklen);
-    printf("Received %d bytes\n", ret);
     return ret;
 }
 
