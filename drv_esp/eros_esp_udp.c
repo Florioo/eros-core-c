@@ -61,7 +61,8 @@ void udp_write(void* context, uint8_t *data, uint16_t length)
     // Check if peer_addr is set
     if (((udp_context_t*) context)->peer_addr.ss_family == 0)
     {
-        ESP_LOGE(TAG, "Peer address not set");
+        // Logging the error causes a stack overflow, if the logging is attached to the udp stream
+        // ESP_LOGE(TAG, "Peer address not set");
         return;
     }
 
@@ -75,7 +76,9 @@ int udp_read(void* context, uint8_t *data, uint16_t length)
     udp_context_t * udp_context = (udp_context_t*) context;
     socklen_t socklen = sizeof(udp_context->peer_addr);
     // Read data from the UDP socket
-    return recvfrom(udp_context->sock, data, length - 1, 0, (struct sockaddr *)&udp_context->peer_addr, &socklen);
+    int ret =  recvfrom(udp_context->sock, data, length - 1, 0, (struct sockaddr *)&udp_context->peer_addr, &socklen);
+    printf("Received %d bytes\n", ret);
+    return ret;
 }
 
 void udp_read_task(void* context)
