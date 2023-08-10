@@ -49,7 +49,7 @@ int eros_encode(uint8_t channel, uint8_t *input_buffer, uint16_t input_data_len,
     temp_buffer[input_data_len + 1] = checksum >> 8;
     temp_buffer[input_data_len + 2] = checksum & 0xFF;
 
-    int16_t final_len = 0;
+    unsigned int final_len = 0;
 
 
     cobs_ret_t ret = cobs_encode(temp_buffer, input_data_len + 3, output_buffer, *output_buffer_len, &final_len);

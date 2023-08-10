@@ -4,7 +4,7 @@
 #include "esp_log.h"
 #include "string.h"
 
-static const char *TAG = "eros_esp_uart";
+static const char *TAG __attribute__((unused)) = "eros_esp_uart";
 
 void read_task(void* context);
 int uart_read(void* context, uint8_t *data, uint16_t length);
