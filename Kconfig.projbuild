@@ -25,5 +25,15 @@ menu "EROS Configuration"
     config EROS_TRACE_MODE_JSON
         bool "Send pbus traces in JSON format instead of CSV"
         default n
-endmenu
 
+#TODO review which esp cores are actually dual cores, as these are the only ones that make sense
+    config EROS_CPU_CORE
+        int "Core Affinity"
+        default -1
+        range -1 1
+        help
+            Define on which core the eros code should be executed.
+            In time critical applications it might be relevant to preserve a 'critical' cpu core.
+            The default is '-1', which causes the system to determine the actual core to run the task.
+            Check the docs on xTaskCreatePinnedToCore
+endmenu
