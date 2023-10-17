@@ -1,9 +1,5 @@
 menu "EROS Configuration"
 
-    config ENABLE_EROS_TCP
-        bool "Enable EROS TCP"
-        default y
-
     config ENABLE_EROS_UDP
         bool "Enable EROS UDP"
         default y
@@ -11,10 +7,16 @@ menu "EROS Configuration"
     config EROS_UDP_PORT
         int "UDP Port"
         default 5555
+        depends on ENABLE_EROS_UDP
+
+    config ENABLE_EROS_TCP
+        bool "Enable EROS TCP"
+        default y
 
     config EROS_TCP_PORT
         int "TCP Port"
         default 6666
+        depends on ENABLE_EROS_TCP
 
     config EROS_UART_BAUD
         int "UART Baudrate"
