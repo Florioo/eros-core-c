@@ -1,0 +1,27 @@
+menu "EROS Configuration"
+
+    config ENABLE_EROS_TCP
+        bool "Enable EROS TCP"
+        default y
+
+    config ENABLE_EROS_UDP
+        bool "Enable EROS UDP"
+        default y
+
+    config EROS_UDP_PORT
+        int "UDP Port"
+        default 5555
+
+    config EROS_TCP_PORT
+        int "TCP Port"
+        default 6666
+
+    config EROS_UART_BAUD
+        int "UART Baudrate"
+        default 2000000
+
+    config EROS_TRACE_MODE_JSON
+        bool "Send pbus traces in JSON format instead of CSV"
+        default n
+endmenu
+
